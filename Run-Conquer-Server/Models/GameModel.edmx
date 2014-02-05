@@ -1,0 +1,291 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="GameModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <EntityContainer Name="GameModelStoreContainer">
+    <EntitySet Name="PlayerSet" EntityType="GameModel.Store.PlayerSet" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="GameInstanceSet" EntityType="GameModel.Store.GameInstanceSet" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="TeamSet" EntityType="GameModel.Store.TeamSet" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="MapSet" EntityType="GameModel.Store.MapSet" store:Type="Tables" Schema="dbo" />
+    <AssociationSet Name="GameInstanceMap" Association="GameModel.Store.GameInstanceMap">
+      <End Role="GameInstance" EntitySet="GameInstanceSet" />
+      <End Role="Map" EntitySet="MapSet" />
+    </AssociationSet>
+    <AssociationSet Name="GameInstanceTeam" Association="GameModel.Store.GameInstanceTeam">
+      <End Role="GameInstance" EntitySet="GameInstanceSet" />
+      <End Role="Team" EntitySet="TeamSet" />
+    </AssociationSet>
+    <AssociationSet Name="TeamPlayer" Association="GameModel.Store.TeamPlayer">
+      <End Role="Team" EntitySet="TeamSet" />
+      <End Role="Player" EntitySet="PlayerSet" />
+    </AssociationSet>
+    <AssociationSet Name="GameInstancePlayer" Association="GameModel.Store.GameInstancePlayer">
+      <End Role="GameInstance" EntitySet="GameInstanceSet" />
+      <End Role="Player" EntitySet="PlayerSet" />
+    </AssociationSet>
+  </EntityContainer>
+  <EntityType Name="PlayerSet">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Position_x" Type="float" Nullable="false" />
+    <Property Name="Position_y" Type="float" Nullable="false" />
+    <Property Name="TeamId" Type="int" Nullable="true" />
+    <Property Name="GameInstanceId" Type="int" Nullable="true" />
+  </EntityType>
+  <EntityType Name="GameInstanceSet">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Map_Id" Type="int" Nullable="false" />
+  </EntityType>
+  <EntityType Name="TeamSet">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Color" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="Name" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="GameInstanceId" Type="int" Nullable="false" />
+  </EntityType>
+  <EntityType Name="MapSet">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+  </EntityType>
+  <Association Name="GameInstanceMap">
+    <End Role="GameInstance" Type="GameModel.Store.GameInstanceSet" Multiplicity="*" />
+    <End Role="Map" Type="GameModel.Store.MapSet" Multiplicity="1" />
+    <ReferentialConstraint>
+      <Principal Role="Map">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="GameInstance">
+        <PropertyRef Name="Map_Id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="GameInstanceTeam">
+    <End Role="GameInstance" Type="GameModel.Store.GameInstanceSet" Multiplicity="1" />
+    <End Role="Team" Type="GameModel.Store.TeamSet" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="GameInstance">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="Team">
+        <PropertyRef Name="GameInstanceId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="TeamPlayer">
+    <End Role="Team" Type="GameModel.Store.TeamSet" Multiplicity="0..1" />
+    <End Role="Player" Type="GameModel.Store.PlayerSet" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Team">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="Player">
+        <PropertyRef Name="TeamId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="GameInstancePlayer">
+    <End Role="GameInstance" Type="GameModel.Store.GameInstanceSet" Multiplicity="0..1" />
+    <End Role="Player" Type="GameModel.Store.PlayerSet" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="GameInstance">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="Player">
+        <PropertyRef Name="GameInstanceId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+</Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema xmlns="http://schemas.microsoft.com/ado/2009/11/edm" xmlns:cg="http://schemas.microsoft.com/ado/2006/04/codegeneration" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" Namespace="GameModel" Alias="Self" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" annotation:UseStrongSpatialTypes="false">
+        <EntityContainer Name="GameModelContainer" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="PlayerSet" EntityType="GameModel.Player" />
+          <EntitySet Name="GameInstanceSet" EntityType="GameModel.GameInstance" />
+          <EntitySet Name="TeamSet" EntityType="GameModel.Team" />
+          <EntitySet Name="MapSet" EntityType="GameModel.Map" />
+          <AssociationSet Name="GameInstanceMap" Association="GameModel.GameInstanceMap">
+            <End Role="GameInstance" EntitySet="GameInstanceSet" />
+            <End Role="Map" EntitySet="MapSet" />
+          </AssociationSet>
+          <AssociationSet Name="GameInstanceTeam" Association="GameModel.GameInstanceTeam">
+            <End Role="GameInstance" EntitySet="GameInstanceSet" />
+            <End Role="Team" EntitySet="TeamSet" />
+          </AssociationSet>
+          <AssociationSet Name="TeamPlayer" Association="GameModel.TeamPlayer">
+            <End Role="Team" EntitySet="TeamSet" />
+            <End Role="Player" EntitySet="PlayerSet" />
+          </AssociationSet>
+          <AssociationSet Name="GameInstancePlayer" Association="GameModel.GameInstancePlayer">
+            <End Role="GameInstance" EntitySet="GameInstanceSet" />
+            <End Role="Player" EntitySet="PlayerSet" />
+          </AssociationSet>
+          </EntityContainer>
+        <EntityType Name="Player">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Position" Type="GameModel.PositionType" Nullable="false" />
+          <NavigationProperty Name="Team" Relationship="GameModel.TeamPlayer" FromRole="Player" ToRole="Team" />
+          <Property Name="TeamId" Type="Int32" Nullable="true" />
+          <NavigationProperty Name="GameInstance" Relationship="GameModel.GameInstancePlayer" FromRole="Player" ToRole="GameInstance" />
+          <Property Name="GameInstanceId" Type="Int32" Nullable="true" />
+        </EntityType>
+        <ComplexType Name="PositionType" >
+          <Property Type="Double" Name="x" Nullable="false" />
+          <Property Type="Double" Name="y" Nullable="false" />
+        </ComplexType>
+        <EntityType Name="GameInstance">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <NavigationProperty Name="Map" Relationship="GameModel.GameInstanceMap" FromRole="GameInstance" ToRole="Map" />
+          <NavigationProperty Name="Teams" Relationship="GameModel.GameInstanceTeam" FromRole="GameInstance" ToRole="Team" />
+          <NavigationProperty Name="Players" Relationship="GameModel.GameInstancePlayer" FromRole="GameInstance" ToRole="Player" />
+        </EntityType>
+        <EntityType Name="Team">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Color" Type="String" Nullable="false" />
+          <Property Name="Name" Type="String" Nullable="false" />
+          <NavigationProperty Name="GameInstance" Relationship="GameModel.GameInstanceTeam" FromRole="Team" ToRole="GameInstance" />
+          <Property Name="GameInstanceId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Players" Relationship="GameModel.TeamPlayer" FromRole="Team" ToRole="Player" />
+        </EntityType>
+        <EntityType Name="Map">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <NavigationProperty Name="GameInstance" Relationship="GameModel.GameInstanceMap" FromRole="Map" ToRole="GameInstance" />
+        </EntityType>
+        <Association Name="GameInstanceMap">
+          <End Type="GameModel.GameInstance" Role="GameInstance" Multiplicity="1" />
+          <End Type="GameModel.Map" Role="Map" Multiplicity="1" />
+        </Association>
+        <Association Name="GameInstanceTeam">
+          <End Type="GameModel.GameInstance" Role="GameInstance" Multiplicity="1" />
+          <End Type="GameModel.Team" Role="Team" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="GameInstance">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Team">
+              <PropertyRef Name="GameInstanceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="TeamPlayer">
+          <End Type="GameModel.Team" Role="Team" Multiplicity="0..1" />
+          <End Type="GameModel.Player" Role="Player" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Team">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Player">
+              <PropertyRef Name="TeamId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="GameInstancePlayer">
+          <End Type="GameModel.GameInstance" Role="GameInstance" Multiplicity="0..1" />
+          <End Type="GameModel.Player" Role="Player" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="GameInstance">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Player">
+              <PropertyRef Name="GameInstanceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+    <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="GameModelStoreContainer" CdmEntityContainer="GameModelContainer">
+    <EntitySetMapping Name="PlayerSet">
+      <EntityTypeMapping TypeName="IsTypeOf(GameModel.Player)">
+        <MappingFragment StoreEntitySet="PlayerSet">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ComplexProperty Name="Position" TypeName="GameModel.PositionType">
+            <ScalarProperty Name="x" ColumnName="Position_x" />
+            <ScalarProperty Name="y" ColumnName="Position_y" />
+          </ComplexProperty>
+          <ScalarProperty Name="TeamId" ColumnName="TeamId" />
+          <ScalarProperty Name="GameInstanceId" ColumnName="GameInstanceId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="GameInstanceSet">
+      <EntityTypeMapping TypeName="IsTypeOf(GameModel.GameInstance)">
+        <MappingFragment StoreEntitySet="GameInstanceSet">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="TeamSet">
+      <EntityTypeMapping TypeName="IsTypeOf(GameModel.Team)">
+        <MappingFragment StoreEntitySet="TeamSet">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="Color" ColumnName="Color" />
+          <ScalarProperty Name="Name" ColumnName="Name" />
+          <ScalarProperty Name="GameInstanceId" ColumnName="GameInstanceId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="MapSet">
+      <EntityTypeMapping TypeName="IsTypeOf(GameModel.Map)">
+        <MappingFragment StoreEntitySet="MapSet">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <AssociationSetMapping Name="GameInstanceMap" TypeName="GameModel.GameInstanceMap" StoreEntitySet="GameInstanceSet">
+      <EndProperty Name="Map">
+        <ScalarProperty Name="Id" ColumnName="Map_Id" />
+      </EndProperty>
+      <EndProperty Name="GameInstance">
+        <ScalarProperty Name="Id" ColumnName="Id" />
+      </EndProperty>
+    </AssociationSetMapping>
+  </EntityContainerMapping>
+</Mapping></edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <edmx:Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </edmx:Connection>
+    <edmx:Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="False" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+        <DesignerProperty Name="UseLegacyProvider" Value="True" />
+      </DesignerInfoPropertySet>
+    </edmx:Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>
