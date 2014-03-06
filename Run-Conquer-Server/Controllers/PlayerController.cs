@@ -6,7 +6,6 @@ using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Web;
 using System.Web.Http;
 using Run_Conquer_Server.Models;
 
@@ -14,14 +13,13 @@ namespace Run_Conquer_Server.Controllers
 {
     public class PlayerController : ApiController
     {
-        private GameModelContainer db = new GameModelContainer();
+        private readonly GameModelContainer db = new GameModelContainer();
 
         // GET api/Player/GetPlayers
         [HttpGet]
         public IEnumerable<Player> GetPlayers()
         {
-            var playerset = db.PlayerSet.Include(p => p.Team).Include(p => p.GameInstance);
-            return playerset.AsEnumerable();
+            return db.PlayerSet.ToList(); ;
         }
 
         // GET api/Player/GetPlayer/5
@@ -70,9 +68,8 @@ namespace Run_Conquer_Server.Controllers
                 HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.Created, player);
                 response.Headers.Location = new Uri(Url.Link("DefaultApi", new { id = player.Id }));
                 return response;
-            } else {
-                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);
             }
+            return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);
         }
 
         // GET api/Player/DeletePlayer/5
@@ -99,9 +96,9 @@ namespace Run_Conquer_Server.Controllers
         [HttpGet]
         public HttpResponseMessage DeleteAllPlayers()
         {
-            var players = db.PlayerSet.ToList();
-            foreach(var player in players) {
-                db.PlayerSet.Remove(player);                    
+            List<Player> players = db.PlayerSet.ToList();
+            foreach(Player player in players) {
+                db.PlayerSet.Remove(player);
             }
 
             try {

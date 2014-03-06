@@ -22,27 +22,21 @@
       <End Role="Team" EntitySet="TeamSet" />
       <End Role="Player" EntitySet="PlayerSet" />
     </AssociationSet>
-    <AssociationSet Name="GameInstancePlayer" Association="GameModel.Store.GameInstancePlayer">
-      <End Role="GameInstance" EntitySet="GameInstanceSet" />
-      <End Role="Player" EntitySet="PlayerSet" />
-    </AssociationSet>
   </EntityContainer>
   <EntityType Name="PlayerSet">
     <Key>
       <PropertyRef Name="Id" />
     </Key>
-    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Id" Type="int" Nullable="false" />
     <Property Name="Position_x" Type="float" Nullable="false" />
     <Property Name="Position_y" Type="float" Nullable="false" />
     <Property Name="TeamId" Type="int" Nullable="true" />
-    <Property Name="GameInstanceId" Type="int" Nullable="true" />
   </EntityType>
   <EntityType Name="GameInstanceSet">
     <Key>
       <PropertyRef Name="Id" />
     </Key>
     <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-    <Property Name="Map_Id" Type="int" Nullable="false" />
   </EntityType>
   <EntityType Name="TeamSet">
     <Key>
@@ -58,21 +52,26 @@
       <PropertyRef Name="Id" />
     </Key>
     <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="GameInstance_Id" Type="int" Nullable="false" />
   </EntityType>
   <Association Name="GameInstanceMap">
-    <End Role="GameInstance" Type="GameModel.Store.GameInstanceSet" Multiplicity="*" />
-    <End Role="Map" Type="GameModel.Store.MapSet" Multiplicity="1" />
+    <End Role="GameInstance" Type="GameModel.Store.GameInstanceSet" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="Map" Type="GameModel.Store.MapSet" Multiplicity="*" />
     <ReferentialConstraint>
-      <Principal Role="Map">
+      <Principal Role="GameInstance">
         <PropertyRef Name="Id" />
       </Principal>
-      <Dependent Role="GameInstance">
-        <PropertyRef Name="Map_Id" />
+      <Dependent Role="Map">
+        <PropertyRef Name="GameInstance_Id" />
       </Dependent>
     </ReferentialConstraint>
   </Association>
   <Association Name="GameInstanceTeam">
-    <End Role="GameInstance" Type="GameModel.Store.GameInstanceSet" Multiplicity="1" />
+    <End Role="GameInstance" Type="GameModel.Store.GameInstanceSet" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
     <End Role="Team" Type="GameModel.Store.TeamSet" Multiplicity="*" />
     <ReferentialConstraint>
       <Principal Role="GameInstance">
@@ -92,18 +91,6 @@
       </Principal>
       <Dependent Role="Player">
         <PropertyRef Name="TeamId" />
-      </Dependent>
-    </ReferentialConstraint>
-  </Association>
-  <Association Name="GameInstancePlayer">
-    <End Role="GameInstance" Type="GameModel.Store.GameInstanceSet" Multiplicity="0..1" />
-    <End Role="Player" Type="GameModel.Store.PlayerSet" Multiplicity="*" />
-    <ReferentialConstraint>
-      <Principal Role="GameInstance">
-        <PropertyRef Name="Id" />
-      </Principal>
-      <Dependent Role="Player">
-        <PropertyRef Name="GameInstanceId" />
       </Dependent>
     </ReferentialConstraint>
   </Association>
@@ -128,21 +115,15 @@
             <End Role="Team" EntitySet="TeamSet" />
             <End Role="Player" EntitySet="PlayerSet" />
           </AssociationSet>
-          <AssociationSet Name="GameInstancePlayer" Association="GameModel.GameInstancePlayer">
-            <End Role="GameInstance" EntitySet="GameInstanceSet" />
-            <End Role="Player" EntitySet="PlayerSet" />
-          </AssociationSet>
           </EntityContainer>
         <EntityType Name="Player">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="None" />
           <Property Name="Position" Type="GameModel.PositionType" Nullable="false" />
           <NavigationProperty Name="Team" Relationship="GameModel.TeamPlayer" FromRole="Player" ToRole="Team" />
           <Property Name="TeamId" Type="Int32" Nullable="true" />
-          <NavigationProperty Name="GameInstance" Relationship="GameModel.GameInstancePlayer" FromRole="Player" ToRole="GameInstance" />
-          <Property Name="GameInstanceId" Type="Int32" Nullable="true" />
         </EntityType>
         <ComplexType Name="PositionType" >
           <Property Type="Double" Name="x" Nullable="false" />
@@ -155,7 +136,6 @@
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <NavigationProperty Name="Map" Relationship="GameModel.GameInstanceMap" FromRole="GameInstance" ToRole="Map" />
           <NavigationProperty Name="Teams" Relationship="GameModel.GameInstanceTeam" FromRole="GameInstance" ToRole="Team" />
-          <NavigationProperty Name="Players" Relationship="GameModel.GameInstancePlayer" FromRole="GameInstance" ToRole="Player" />
         </EntityType>
         <EntityType Name="Team">
           <Key>
@@ -176,11 +156,16 @@
           <NavigationProperty Name="GameInstance" Relationship="GameModel.GameInstanceMap" FromRole="Map" ToRole="GameInstance" />
         </EntityType>
         <Association Name="GameInstanceMap">
-          <End Type="GameModel.GameInstance" Role="GameInstance" Multiplicity="1" />
-          <End Type="GameModel.Map" Role="Map" Multiplicity="1" />
+          <End Type="GameModel.GameInstance" Role="GameInstance" Multiplicity="1" >
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="GameModel.Map" Role="Map" Multiplicity="1" >
+          </End>
         </Association>
         <Association Name="GameInstanceTeam">
-          <End Type="GameModel.GameInstance" Role="GameInstance" Multiplicity="1" />
+          <End Type="GameModel.GameInstance" Role="GameInstance" Multiplicity="1" >
+            <OnDelete Action="Cascade" />
+          </End>
           <End Type="GameModel.Team" Role="Team" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="GameInstance">
@@ -203,18 +188,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="GameInstancePlayer">
-          <End Type="GameModel.GameInstance" Role="GameInstance" Multiplicity="0..1" />
-          <End Type="GameModel.Player" Role="Player" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="GameInstance">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Player">
-              <PropertyRef Name="GameInstanceId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -230,7 +203,6 @@
             <ScalarProperty Name="y" ColumnName="Position_y" />
           </ComplexProperty>
           <ScalarProperty Name="TeamId" ColumnName="TeamId" />
-          <ScalarProperty Name="GameInstanceId" ColumnName="GameInstanceId" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
@@ -258,11 +230,11 @@
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
-    <AssociationSetMapping Name="GameInstanceMap" TypeName="GameModel.GameInstanceMap" StoreEntitySet="GameInstanceSet">
-      <EndProperty Name="Map">
-        <ScalarProperty Name="Id" ColumnName="Map_Id" />
-      </EndProperty>
+    <AssociationSetMapping Name="GameInstanceMap" TypeName="GameModel.GameInstanceMap" StoreEntitySet="MapSet">
       <EndProperty Name="GameInstance">
+        <ScalarProperty Name="Id" ColumnName="GameInstance_Id" />
+      </EndProperty>
+      <EndProperty Name="Map">
         <ScalarProperty Name="Id" ColumnName="Id" />
       </EndProperty>
     </AssociationSetMapping>

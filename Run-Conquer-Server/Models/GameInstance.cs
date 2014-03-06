@@ -17,13 +17,11 @@ namespace Run_Conquer_Server.Models
         public GameInstance()
         {
             this.Teams = new HashSet<Team>();
-            this.Players = new HashSet<Player>();
         }
     
         public int Id { get; set; }
     
         public virtual Map Map { get; set; }
         public virtual ICollection<Team> Teams { get; set; }
-        public virtual ICollection<Player> Players { get; set; }
     }
 }

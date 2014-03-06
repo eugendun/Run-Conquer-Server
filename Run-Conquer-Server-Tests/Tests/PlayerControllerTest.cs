@@ -1,46 +1,49 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Run_Conquer_Server.Models;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Net;
-using System.Net.Http;
 using System.Net.Http.Formatting;
 using System.Text;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
+using Run_Conquer_Server.Models;
 
-namespace Run_Conquer_Server_Tests
+namespace Run_Conquer_Server_Tests.Tests
 {
     [TestClass]
     public class PlayerControllerTest
     {
-        public static string serverUrl = "http://192.168.178.25";
-        public static string serverPort = "3010";
+        private const string ServerUrl = "http://192.168.178.25";
+        private const string ServerPort = "3010";
 
-        public JsonMediaTypeFormatter formatter;
+        private JsonMediaTypeFormatter _formatter;
 
         [TestInitialize]
         public void Initialize()
         {
-            formatter = new JsonMediaTypeFormatter();
-            formatter.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Serialize;
-            formatter.SerializerSettings.PreserveReferencesHandling = Newtonsoft.Json.PreserveReferencesHandling.Objects;
+            _formatter = new JsonMediaTypeFormatter
+            {
+                SerializerSettings =
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
+                    PreserveReferencesHandling = PreserveReferencesHandling.None
+                }
+            };
         }
 
-        public string GetCallUrl(string apiCall)
+        private static string GetCallUrl(string apiCall)
         {
-            Debug.WriteLine(serverPort + ":" + serverPort + "/" + apiCall);
-            return serverUrl + ":" + serverPort + "/api/" + apiCall;
+            Debug.WriteLine(ServerPort + ":" + ServerPort + "/" + apiCall);
+            return ServerUrl + ":" + ServerPort + "/api/" + apiCall;
         }
 
         [TestMethod]
         //[AspNetDevelopmentServer("RuncConquer", @"D:\Source\Repos\Run-Conquer-Server\Run-Conquer-Server")]
         public void TestGetPlayers()
         {
-
             var client = new WebClient();
             client.Headers.Add(HttpRequestHeader.ContentType, "application/json");
             byte[] rawResult = client.DownloadData(GetCallUrl("Player/GetPlayers"));
-            var result = Encoding.Unicode.GetString(rawResult);
+            string result = Encoding.Unicode.GetString(rawResult);
         }
 
         [TestMethod]
@@ -51,7 +54,7 @@ namespace Run_Conquer_Server_Tests
             var game = new GameInstance();
             game.Map = map;
             player.Id = 2;
-            game.Players.Add(player);
+            //game.Players.Add(player);
 
             var json = new JsonMediaTypeFormatter();
             string serPlayer = SerializationHelper.Serialize(json, player);
@@ -60,7 +63,6 @@ namespace Run_Conquer_Server_Tests
             var client = new WebClient();
             client.Headers.Add(HttpRequestHeader.ContentType, "application/json");
             byte[] result = client.UploadData(GetCallUrl("Player/PostPlayer"), data);
-
         }
 
         [TestMethod]
@@ -72,8 +74,39 @@ namespace Run_Conquer_Server_Tests
             //client.DownloadData(GetCallUrl("Player/DeleteAllPlayers"));
 
             byte[] rawResult = client.DownloadData(GetCallUrl("Player/GetPlayers"));
-            var result = Encoding.ASCII.GetString(rawResult);
-            var players = SerializationHelper.Deserialize<List<Player>>(formatter, result);
+            string result = Encoding.ASCII.GetString(rawResult);
+            var players = SerializationHelper.Deserialize<List<Player>>(_formatter, result);
+        }
+
+        [TestMethod]
+        public void TestGameModelInstance()
+        {
+            var playerA = new Player {Position = new PositionType {x = 1.0, y = 2.0}};
+            var playerB = new Player {Position = new PositionType {x = 4.0, y = 4.0}};
+            var teamA = new Team {Color = "red", Name = "Red Team"};
+            var teamB = new Team {Color = "blue", Name = "Blue Team"};
+            teamA.Players.Add(playerA);
+            teamB.Players.Add(playerB);
+
+            var map = new Map();
+            var game = new GameInstance {Map = map};
+            game.Teams.Add(teamA);
+            game.Teams.Add(teamB);
+
+            string serGame = SerializationHelper.Serialize(_formatter, game);
+            Debug.WriteLine(serGame);
+
+            var client = new WebClient();
+            client.Headers.Add(HttpRequestHeader.ContentType, "application/json");
+
+            string jsontest =
+                "{Map:{},Teams:[" +
+                "{Color:'red',Name:'Red Team',Players:[{Position:{x:1.0,y:2.0}}]}," +
+                "{Color:'blue',Name:'Blue Team',Players:[{Position:{x:4.0,y:4.0}}]}" +
+                "]}";
+
+            byte[] data = Encoding.ASCII.GetBytes(jsontest);
+            client.UploadData(GetCallUrl("GameInstance/PostGameInstance"), data);
         }
     }
 }
