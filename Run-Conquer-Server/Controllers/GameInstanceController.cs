@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Data.Entity.Migrations;
 using System.Diagnostics;
@@ -20,7 +21,8 @@ namespace Run_Conquer_Server.Controllers
         [HttpGet]
         public IEnumerable<GameInstance> GetGameInstances()
         {
-            return _db.GameInstanceSet.AsEnumerable();
+            var games = _db.GameInstanceSet.Include(g => g.Map).Include(g => g.Teams);
+            return games;
         }
 
         // GET api/GameInstance/GetGameInstance/5
@@ -47,11 +49,29 @@ namespace Run_Conquer_Server.Controllers
                 return Request.CreateResponse(HttpStatusCode.BadRequest);
             }
 
-            _db.GameInstanceSet.Attach(gameinstance);
-            _db.Entry(gameinstance).State = EntityState.Modified;
+            var game = _db.GameInstanceSet.Find(id);
+
+            var removedPlayers = from team in game.Teams
+                                 from player in team.Players
+                                 where !gameinstance.Teams.SelectMany(t => t.Players).Select(p => p.Id).Contains(player.Id)
+                                 select player;
+
+            foreach(var removedPlayer in removedPlayers) {
+                removedPlayer.Team = null;
+            }
+
+            //var addedPlayers = from team in gameinstance.Teams
+            //                   from player in team.Players
+            //                   where !game.Teams.SelectMany(t => t.Players).Select(p => p.Id).Contains(player.Id)
+            //                   select player;
+
+            //foreach(var addedPlayer in addedPlayers) {
+            //    var team = _db.TeamSet.Find(addedPlayer.TeamId);
+            //    team.Players.Add(addedPlayer);
+            //}
 
             try {
-                int count = _db.SaveChanges();
+                _db.SaveChanges();
             } catch(DbUpdateConcurrencyException ex) {
                 return Request.CreateErrorResponse(HttpStatusCode.NotFound, ex);
             }

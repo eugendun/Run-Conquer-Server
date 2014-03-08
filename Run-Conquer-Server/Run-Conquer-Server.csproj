@@ -174,7 +174,6 @@
     <Compile Include="Models\GameInstance.cs">
       <DependentUpon>GameModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\GameInstanceDto.cs" />
     <Compile Include="Models\GameModel.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -190,15 +189,12 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>GameModel.edmx</DependentUpon>
     </Compile>
-    <Compile Include="Models\GameModelDTO.cs" />
     <Compile Include="Models\Map.cs">
       <DependentUpon>GameModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\MapDto.cs" />
     <Compile Include="Models\Player.cs">
       <DependentUpon>GameModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\PlayerDto.cs" />
     <Compile Include="Models\PositionType.cs">
       <DependentUpon>GameModel.tt</DependentUpon>
     </Compile>

@@ -277,7 +277,7 @@ namespace Run_Conquer_Server_Tests.Tests
                                             "'Team':{'$ref':'4'}," +
                                             "'Id':" + playerBlue.Id + "," +
                                             "'TeamId':" + playerBlue.TeamId + "," +
-                                            "'Position':{'$id':'6','x':0.0,'y':0.0}" +
+                                            "'Position':{'$id':'6','x':0.2,'y':0.0}" +
                                         "}" +
                                     "]," +
                                     "'Id':" + teamBlue.Id + "," +
@@ -302,6 +302,69 @@ namespace Run_Conquer_Server_Tests.Tests
                 Assert.AreEqual(0, dbgame.Teams.Where(t => t.Color == "red").SelectMany(t => t.Players).Count());
                 Assert.AreEqual(1, dbgame.Teams.Where(t => t.Color == "blue").SelectMany(t => t.Players).Count());
             }
+
+            #region json add new player
+
+            json = "{" +
+           "'$id':'1'," +
+           "'Map':" +
+                "{" +
+                "'$id':'2'," +
+                "'GameInstance':{'$ref':'1'}," +
+                "'Id':" + game.Map.Id + "}," +
+                "'Teams':[" +
+                    "{" +
+                        "'$id':'3'," +
+                        "'GameInstance':{'$ref':'1'}," +
+                        "'Players':[" +
+                            "{" +
+                                //"'$id':'12'," +
+                                //"'Team':{'$ref':'3'}," +
+                                "'Id':" + "1111111" + "," +
+                                //"'TeamId':" + teamRed.Id + "," +
+                                "'Position':{'$id':'13','x':0.2,'y':1.0}" + 
+                            "}" +
+                        "]," +
+                        "'Id':" + teamRed.Id + "," +
+                        "'Color':'red'," +
+                        "'Name':'Red Team'," +
+                        "'GameInstanceId':" + teamRed.GameInstanceId +
+                    "}," +
+                    "{" +
+                        "'$id':'4'," +
+                        "'GameInstance':{'$ref':'1'}," +
+                        "'Players':[" +
+                            "{" +
+                                "'$id':'5'," +
+                                "'Team':{'$ref':'4'}," +
+                                "'Id':" + playerBlue.Id + "," +
+                                "'TeamId':" + playerBlue.TeamId + "," +
+                                "'Position':{'$id':'6','x':0.2,'y':0.0}" +
+                            "}" +
+                        "]," +
+                        "'Id':" + teamBlue.Id + "," +
+                        "'Color':'blue'," +
+                        "'Name':'Blue Team'," +
+                        "'GameInstanceId':" + teamBlue.GameInstanceId +
+                    "}" +
+                "]," +
+                "'Id':" + game.Id +
+           "}";
+
+            #endregion
+
+            desGame = SerializationHelper.Deserialize<GameInstance>(_formatter, json);
+            Assert.AreEqual(1, desGame.Teams.Where(t => t.Color == "red").SelectMany(t => t.Players).Count());
+            _controller.PutGameInstance(game.Id, desGame);
+
+            using(var db = new GameModelContainer()) {
+                var dbgame = db.GameInstanceSet.FirstOrDefault(g => g.Id == game.Id);
+
+                Assert.IsNotNull(dbgame);
+                Assert.AreEqual(1, dbgame.Teams.Where(t => t.Color == "red").SelectMany(t => t.Players).Count());
+                Assert.AreEqual(1, dbgame.Teams.Where(t => t.Color == "blue").SelectMany(t => t.Players).Count());
+            }
+
         }
 
         #endregion
