@@ -159,7 +159,7 @@
           <End Type="GameModel.GameInstance" Role="GameInstance" Multiplicity="1" >
             <OnDelete Action="Cascade" />
           </End>
-          <End Type="GameModel.Map" Role="Map" Multiplicity="1" >
+          <End Type="GameModel.Map" Role="Map" Multiplicity="0..1" >
           </End>
         </Association>
         <Association Name="GameInstanceTeam">

@@ -318,11 +318,11 @@ namespace Run_Conquer_Server_Tests.Tests
                         "'GameInstance':{'$ref':'1'}," +
                         "'Players':[" +
                             "{" +
-                                //"'$id':'12'," +
-                                //"'Team':{'$ref':'3'}," +
+                                "'$id':'12'," +
+                                "'Team':{'$ref':'3'}," +
                                 "'Id':" + "1111111" + "," +
-                                //"'TeamId':" + teamRed.Id + "," +
-                                "'Position':{'$id':'13','x':0.2,'y':1.0}" + 
+                                "'TeamId':" + teamRed.Id + "," +
+                                "'Position':{'$id':'13','x':0.2,'y':1.0}" +
                             "}" +
                         "]," +
                         "'Id':" + teamRed.Id + "," +

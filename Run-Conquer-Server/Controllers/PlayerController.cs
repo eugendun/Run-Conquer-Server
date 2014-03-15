@@ -27,30 +27,32 @@ namespace Run_Conquer_Server.Controllers
         public Player GetPlayer(int id)
         {
             Player player = db.PlayerSet.Find(id);
-            if(player == null) {
+            if (player == null) {
                 throw new HttpResponseException(Request.CreateResponse(HttpStatusCode.NotFound));
             }
 
             return player;
         }
 
-        // POST api/Player/PutPlayer/5
+        // POST api/Player/PutPlayer
         [HttpPost]
-        public HttpResponseMessage PutPlayer(int id, Player player)
+        public HttpResponseMessage PutPlayer(Player player)
         {
-            if(!ModelState.IsValid) {
+            if (!ModelState.IsValid) {
                 return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);
             }
 
-            if(id != player.Id) {
-                return Request.CreateResponse(HttpStatusCode.BadRequest);
+            var dbPlayer = db.PlayerSet.Find(player.Id);
+            if (dbPlayer == null) {
+                return PostPlayer(player);
             }
 
-            db.Entry(player).State = EntityState.Modified;
+            dbPlayer.Position.x = player.Position.x;
+            dbPlayer.Position.y = player.Position.y;
 
             try {
                 db.SaveChanges();
-            } catch(DbUpdateConcurrencyException ex) {
+            } catch (DbUpdateConcurrencyException ex) {
                 return Request.CreateErrorResponse(HttpStatusCode.NotFound, ex);
             }
 
@@ -61,7 +63,7 @@ namespace Run_Conquer_Server.Controllers
         [HttpPost]
         public HttpResponseMessage PostPlayer(Player player)
         {
-            if(ModelState.IsValid) {
+            if (ModelState.IsValid) {
                 db.PlayerSet.Add(player);
                 db.SaveChanges();
 
@@ -77,7 +79,7 @@ namespace Run_Conquer_Server.Controllers
         public HttpResponseMessage DeletePlayer(int id)
         {
             Player player = db.PlayerSet.Find(id);
-            if(player == null) {
+            if (player == null) {
                 return Request.CreateResponse(HttpStatusCode.NotFound);
             }
 
@@ -85,7 +87,7 @@ namespace Run_Conquer_Server.Controllers
 
             try {
                 db.SaveChanges();
-            } catch(DbUpdateConcurrencyException ex) {
+            } catch (DbUpdateConcurrencyException ex) {
                 return Request.CreateErrorResponse(HttpStatusCode.NotFound, ex);
             }
 
@@ -97,13 +99,13 @@ namespace Run_Conquer_Server.Controllers
         public HttpResponseMessage DeleteAllPlayers()
         {
             List<Player> players = db.PlayerSet.ToList();
-            foreach(Player player in players) {
+            foreach (Player player in players) {
                 db.PlayerSet.Remove(player);
             }
 
             try {
                 db.SaveChanges();
-            } catch(DbUpdateConcurrencyException ex) {
+            } catch (DbUpdateConcurrencyException ex) {
                 return Request.CreateErrorResponse(HttpStatusCode.Conflict, ex);
             }
 

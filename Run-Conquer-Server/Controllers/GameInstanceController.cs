@@ -30,49 +30,58 @@ namespace Run_Conquer_Server.Controllers
         public GameInstance GetGameInstance(int id)
         {
             GameInstance gameinstance = _db.GameInstanceSet.Find(id);
-            if(gameinstance == null) {
+            if (gameinstance == null) {
                 throw new HttpResponseException(Request.CreateResponse(HttpStatusCode.NotFound));
             }
 
             return gameinstance;
         }
 
+        // GET api/GameInstance/GetGameInstancePlayers/5
+        [HttpGet]
+        public IEnumerable<Player> GetGameInatancePlayers(int id)
+        {
+            GameInstance game = _db.GameInstanceSet.Find(id);
+            if (game == null) {
+                throw new HttpResponseException(Request.CreateResponse(HttpStatusCode.NotFound, string.Format("GameInstance: {0}", id)));
+            }
+            var playerIds = from team in game.Teams
+                            from player in team.Players
+                            select player.Id;
+
+            var players = from player in _db.PlayerSet
+                          where playerIds.Contains(player.Id)
+                          select player;
+
+            return players;
+        }
+
         // PUT api/GameInstance/PutGameInstance/5
         [HttpPost]
         public HttpResponseMessage PutGameInstance(int id, GameInstance gameinstance)
         {
-            if(!ModelState.IsValid) {
+            if (!ModelState.IsValid) {
                 return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);
             }
 
-            if(id != gameinstance.Id) {
+            if (id != gameinstance.Id) {
                 return Request.CreateResponse(HttpStatusCode.BadRequest);
             }
 
             var game = _db.GameInstanceSet.Find(id);
 
-            var removedPlayers = from team in game.Teams
-                                 from player in team.Players
-                                 where !gameinstance.Teams.SelectMany(t => t.Players).Select(p => p.Id).Contains(player.Id)
-                                 select player;
-
-            foreach(var removedPlayer in removedPlayers) {
-                removedPlayer.Team = null;
+            if (game == null) {
+                return Request.CreateErrorResponse(HttpStatusCode.NotFound, new HttpError("GameInstance not found!"));
             }
 
-            //var addedPlayers = from team in gameinstance.Teams
-            //                   from player in team.Players
-            //                   where !game.Teams.SelectMany(t => t.Players).Select(p => p.Id).Contains(player.Id)
-            //                   select player;
-
-            //foreach(var addedPlayer in addedPlayers) {
-            //    var team = _db.TeamSet.Find(addedPlayer.TeamId);
-            //    team.Players.Add(addedPlayer);
-            //}
+            // TODO Map should be removed and created
+            // TODO Remove removed players
+            // TODO Add new players
+            // TODO Update all players position
 
             try {
                 _db.SaveChanges();
-            } catch(DbUpdateConcurrencyException ex) {
+            } catch (DbUpdateConcurrencyException ex) {
                 return Request.CreateErrorResponse(HttpStatusCode.NotFound, ex);
             }
 
@@ -83,7 +92,7 @@ namespace Run_Conquer_Server.Controllers
         [HttpPost]
         public HttpResponseMessage PostGameInstance(GameInstance gameinstance)
         {
-            if(ModelState.IsValid) {
+            if (ModelState.IsValid) {
                 _db.GameInstanceSet.Add(gameinstance);
                 _db.SaveChanges();
 
@@ -99,24 +108,24 @@ namespace Run_Conquer_Server.Controllers
         public HttpResponseMessage DeleteGameInstance(int id)
         {
             GameInstance gameinstance = _db.GameInstanceSet.Find(id);
-            if(gameinstance == null) {
+            if (gameinstance == null) {
                 return Request.CreateResponse(HttpStatusCode.NotFound);
             }
 
             _db.MapSet.Remove(gameinstance.Map);
             var players = gameinstance.Teams.SelectMany(t => t.Players);
-            foreach(var player in players) {
+            foreach (var player in players) {
                 player.Team = null;
             }
             var teams = gameinstance.Teams.ToList();
-            foreach(var team in teams) {
+            foreach (var team in teams) {
                 _db.TeamSet.Remove(team);
             }
             _db.GameInstanceSet.Remove(gameinstance);
 
             try {
                 _db.SaveChanges();
-            } catch(DbUpdateConcurrencyException ex) {
+            } catch (DbUpdateConcurrencyException ex) {
                 return Request.CreateErrorResponse(HttpStatusCode.NotFound, ex);
             }
 

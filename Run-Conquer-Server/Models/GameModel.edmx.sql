@@ -2,7 +2,7 @@
 -- --------------------------------------------------
 -- Entity Designer DDL Script for SQL Server 2005, 2008, 2012 and Azure
 -- --------------------------------------------------
--- Date Created: 03/03/2014 01:00:59
+-- Date Created: 03/14/2014 23:02:55
 -- Generated from EDMX file: D:\Source\Repos\Run-Conquer-Server\Run-Conquer-Server\Models\GameModel.edmx
 -- --------------------------------------------------
 
@@ -25,9 +25,6 @@ IF OBJECT_ID(N'[dbo].[FK_GameInstanceTeam]', 'F') IS NOT NULL
 GO
 IF OBJECT_ID(N'[dbo].[FK_TeamPlayer]', 'F') IS NOT NULL
     ALTER TABLE [dbo].[PlayerSet] DROP CONSTRAINT [FK_TeamPlayer];
-GO
-IF OBJECT_ID(N'[dbo].[FK_GameInstancePlayer]', 'F') IS NOT NULL
-    ALTER TABLE [dbo].[PlayerSet] DROP CONSTRAINT [FK_GameInstancePlayer];
 GO
 
 -- --------------------------------------------------
