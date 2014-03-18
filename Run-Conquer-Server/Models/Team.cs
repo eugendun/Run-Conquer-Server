@@ -14,17 +14,9 @@ namespace Run_Conquer_Server.Models
     
     public partial class Team
     {
-        public Team()
-        {
-            this.Players = new HashSet<Player>();
-        }
-    
         public int Id { get; set; }
         public string Color { get; set; }
         public string Name { get; set; }
         public int GameInstanceId { get; set; }
-    
-        public virtual GameInstance GameInstance { get; set; }
-        public virtual ICollection<Player> Players { get; set; }
     }
 }

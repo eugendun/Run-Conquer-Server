@@ -20,10 +20,10 @@ namespace Run_Conquer_Server.Models
         }
     
         public int Id { get; set; }
-        public Nullable<int> TeamId { get; set; }
+        public Nullable<int> GameInstanceId { get; set; }
     
         public PositionType Position { get; set; }
     
-        public virtual Team Team { get; set; }
+        public virtual GameInstance GameInstance { get; set; }
     }
 }

@@ -21,8 +21,7 @@ namespace Run_Conquer_Server.Controllers
         [HttpGet]
         public IEnumerable<GameInstance> GetGameInstances()
         {
-            var games = _db.GameInstanceSet.Include(g => g.Map).Include(g => g.Teams);
-            return games;
+            return _db.GameInstanceSet;
         }
 
         // GET api/GameInstance/GetGameInstance/5
@@ -35,25 +34,6 @@ namespace Run_Conquer_Server.Controllers
             }
 
             return gameinstance;
-        }
-
-        // GET api/GameInstance/GetGameInstancePlayers/5
-        [HttpGet]
-        public IEnumerable<Player> GetGameInatancePlayers(int id)
-        {
-            GameInstance game = _db.GameInstanceSet.Find(id);
-            if (game == null) {
-                throw new HttpResponseException(Request.CreateResponse(HttpStatusCode.NotFound, string.Format("GameInstance: {0}", id)));
-            }
-            var playerIds = from team in game.Teams
-                            from player in team.Players
-                            select player.Id;
-
-            var players = from player in _db.PlayerSet
-                          where playerIds.Contains(player.Id)
-                          select player;
-
-            return players;
         }
 
         // PUT api/GameInstance/PutGameInstance/5
@@ -74,6 +54,19 @@ namespace Run_Conquer_Server.Controllers
                 return Request.CreateErrorResponse(HttpStatusCode.NotFound, new HttpError("GameInstance not found!"));
             }
 
+            var players = gameinstance.Players;
+            foreach (var player in players) {
+                var dbPlayer = _db.PlayerSet.Find(player.Id);
+                if (dbPlayer == null) {
+                    game.Players.Add(new Player { Id = player.Id, Position = player.Position });
+                } else {
+                    if (dbPlayer.GameInstance != game) {
+                        dbPlayer.GameInstance = game;
+                    }
+                    dbPlayer.Position = player.Position;
+                }
+            }
+
             // TODO Map should be removed and created
             // TODO Remove removed players
             // TODO Add new players
@@ -85,7 +78,9 @@ namespace Run_Conquer_Server.Controllers
                 return Request.CreateErrorResponse(HttpStatusCode.NotFound, ex);
             }
 
-            return Request.CreateResponse(HttpStatusCode.OK);
+            HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, game);
+            response.Headers.Location = new Uri(Url.Link("DefaultApi", new { id = gameinstance.Id }));
+            return response;
         }
 
         // POST api/GameInstance/PostGameInstance
@@ -101,35 +96,6 @@ namespace Run_Conquer_Server.Controllers
                 return response;
             }
             return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);
-        }
-
-        // DELETE api/GameInstance/DeleteGameInstance/5
-        [HttpGet]
-        public HttpResponseMessage DeleteGameInstance(int id)
-        {
-            GameInstance gameinstance = _db.GameInstanceSet.Find(id);
-            if (gameinstance == null) {
-                return Request.CreateResponse(HttpStatusCode.NotFound);
-            }
-
-            _db.MapSet.Remove(gameinstance.Map);
-            var players = gameinstance.Teams.SelectMany(t => t.Players);
-            foreach (var player in players) {
-                player.Team = null;
-            }
-            var teams = gameinstance.Teams.ToList();
-            foreach (var team in teams) {
-                _db.TeamSet.Remove(team);
-            }
-            _db.GameInstanceSet.Remove(gameinstance);
-
-            try {
-                _db.SaveChanges();
-            } catch (DbUpdateConcurrencyException ex) {
-                return Request.CreateErrorResponse(HttpStatusCode.NotFound, ex);
-            }
-
-            return Request.CreateResponse(HttpStatusCode.OK, gameinstance);
         }
 
         protected override void Dispose(bool disposing)

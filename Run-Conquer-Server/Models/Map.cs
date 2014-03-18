@@ -15,7 +15,5 @@ namespace Run_Conquer_Server.Models
     public partial class Map
     {
         public int Id { get; set; }
-    
-        public virtual GameInstance GameInstance { get; set; }
     }
 }

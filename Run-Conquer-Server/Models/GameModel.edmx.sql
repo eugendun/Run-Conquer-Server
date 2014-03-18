@@ -2,7 +2,7 @@
 -- --------------------------------------------------
 -- Entity Designer DDL Script for SQL Server 2005, 2008, 2012 and Azure
 -- --------------------------------------------------
--- Date Created: 03/14/2014 23:02:55
+-- Date Created: 03/17/2014 02:44:49
 -- Generated from EDMX file: D:\Source\Repos\Run-Conquer-Server\Run-Conquer-Server\Models\GameModel.edmx
 -- --------------------------------------------------
 
@@ -17,14 +17,8 @@ GO
 -- Dropping existing FOREIGN KEY constraints
 -- --------------------------------------------------
 
-IF OBJECT_ID(N'[dbo].[FK_GameInstanceMap]', 'F') IS NOT NULL
-    ALTER TABLE [dbo].[MapSet] DROP CONSTRAINT [FK_GameInstanceMap];
-GO
-IF OBJECT_ID(N'[dbo].[FK_GameInstanceTeam]', 'F') IS NOT NULL
-    ALTER TABLE [dbo].[TeamSet] DROP CONSTRAINT [FK_GameInstanceTeam];
-GO
-IF OBJECT_ID(N'[dbo].[FK_TeamPlayer]', 'F') IS NOT NULL
-    ALTER TABLE [dbo].[PlayerSet] DROP CONSTRAINT [FK_TeamPlayer];
+IF OBJECT_ID(N'[dbo].[FK_GameInstancePlayer]', 'F') IS NOT NULL
+    ALTER TABLE [dbo].[PlayerSet] DROP CONSTRAINT [FK_GameInstancePlayer];
 GO
 
 -- --------------------------------------------------
@@ -53,7 +47,7 @@ CREATE TABLE [dbo].[PlayerSet] (
     [Id] int  NOT NULL,
     [Position_x] float  NOT NULL,
     [Position_y] float  NOT NULL,
-    [TeamId] int  NULL
+    [GameInstanceId] int  NULL
 );
 GO
 
@@ -74,8 +68,7 @@ GO
 
 -- Creating table 'MapSet'
 CREATE TABLE [dbo].[MapSet] (
-    [Id] int IDENTITY(1,1) NOT NULL,
-    [GameInstance_Id] int  NOT NULL
+    [Id] int IDENTITY(1,1) NOT NULL
 );
 GO
 
@@ -111,46 +104,18 @@ GO
 -- Creating all FOREIGN KEY constraints
 -- --------------------------------------------------
 
--- Creating foreign key on [GameInstance_Id] in table 'MapSet'
-ALTER TABLE [dbo].[MapSet]
-ADD CONSTRAINT [FK_GameInstanceMap]
-    FOREIGN KEY ([GameInstance_Id])
-    REFERENCES [dbo].[GameInstanceSet]
-        ([Id])
-    ON DELETE CASCADE ON UPDATE NO ACTION;
-
--- Creating non-clustered index for FOREIGN KEY 'FK_GameInstanceMap'
-CREATE INDEX [IX_FK_GameInstanceMap]
-ON [dbo].[MapSet]
-    ([GameInstance_Id]);
-GO
-
--- Creating foreign key on [GameInstanceId] in table 'TeamSet'
-ALTER TABLE [dbo].[TeamSet]
-ADD CONSTRAINT [FK_GameInstanceTeam]
+-- Creating foreign key on [GameInstanceId] in table 'PlayerSet'
+ALTER TABLE [dbo].[PlayerSet]
+ADD CONSTRAINT [FK_GameInstancePlayer]
     FOREIGN KEY ([GameInstanceId])
     REFERENCES [dbo].[GameInstanceSet]
         ([Id])
-    ON DELETE CASCADE ON UPDATE NO ACTION;
-
--- Creating non-clustered index for FOREIGN KEY 'FK_GameInstanceTeam'
-CREATE INDEX [IX_FK_GameInstanceTeam]
-ON [dbo].[TeamSet]
-    ([GameInstanceId]);
-GO
-
--- Creating foreign key on [TeamId] in table 'PlayerSet'
-ALTER TABLE [dbo].[PlayerSet]
-ADD CONSTRAINT [FK_TeamPlayer]
-    FOREIGN KEY ([TeamId])
-    REFERENCES [dbo].[TeamSet]
-        ([Id])
     ON DELETE NO ACTION ON UPDATE NO ACTION;
 
--- Creating non-clustered index for FOREIGN KEY 'FK_TeamPlayer'
-CREATE INDEX [IX_FK_TeamPlayer]
+-- Creating non-clustered index for FOREIGN KEY 'FK_GameInstancePlayer'
+CREATE INDEX [IX_FK_GameInstancePlayer]
 ON [dbo].[PlayerSet]
-    ([TeamId]);
+    ([GameInstanceId]);
 GO
 
 -- --------------------------------------------------
