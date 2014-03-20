@@ -36,6 +36,20 @@ namespace Run_Conquer_Server.Controllers
             return gameinstance;
         }
 
+        // GET api/GameInstance/GetLastGameInstance
+        [HttpGet]
+        public GameInstance GetLastGameInstance()
+        {
+            var lastGameInstanceId =  (from game in _db.GameInstanceSet
+                                       select game.Id).Max();
+
+            GameInstance gameInstance = _db.GameInstanceSet.Find(lastGameInstanceId);
+            if (gameInstance == null) {
+                throw new HttpResponseException(Request.CreateResponse(HttpStatusCode.NotFound));
+            }
+            return gameInstance;
+        }
+
         // PUT api/GameInstance/PutGameInstance/5
         [HttpPost]
         public HttpResponseMessage PutGameInstance(int id, GameInstance gameinstance)
@@ -52,6 +66,16 @@ namespace Run_Conquer_Server.Controllers
 
             if (game == null) {
                 return Request.CreateErrorResponse(HttpStatusCode.NotFound, new HttpError("GameInstance not found!"));
+            }
+
+            if (gameinstance.Map != null) {
+                if (game.Map == null) {
+                    game.Map = new Map { LatLont = gameinstance.Map.LatLont, Zoom = gameinstance.Map.Zoom, Size = gameinstance.Map.Size };
+                } else {
+                    game.Map.LatLont = gameinstance.Map.LatLont;
+                    game.Map.Size = gameinstance.Map.Size;
+                    game.Map.Zoom = gameinstance.Map.Zoom;
+                }
             }
 
             var players = gameinstance.Players;

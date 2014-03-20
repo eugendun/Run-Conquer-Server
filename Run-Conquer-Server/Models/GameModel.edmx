@@ -14,6 +14,10 @@
       <End Role="GameInstance" EntitySet="GameInstanceSet" />
       <End Role="Player" EntitySet="PlayerSet" />
     </AssociationSet>
+    <AssociationSet Name="MapGameInstance" Association="GameModel.Store.MapGameInstance">
+      <End Role="Map" EntitySet="MapSet" />
+      <End Role="GameInstance" EntitySet="GameInstanceSet" />
+    </AssociationSet>
   </EntityContainer>
   <EntityType Name="PlayerSet">
     <Key>
@@ -29,6 +33,7 @@
       <PropertyRef Name="Id" />
     </Key>
     <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Map_Id" Type="int" Nullable="true" />
   </EntityType>
   <EntityType Name="TeamSet">
     <Key>
@@ -44,6 +49,11 @@
       <PropertyRef Name="Id" />
     </Key>
     <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="LatLont_x" Type="float" Nullable="false" />
+    <Property Name="LatLont_y" Type="float" Nullable="false" />
+    <Property Name="Size_x" Type="float" Nullable="false" />
+    <Property Name="Size_y" Type="float" Nullable="false" />
+    <Property Name="Zoom" Type="int" Nullable="true" />
   </EntityType>
   <Association Name="GameInstancePlayer">
     <End Role="GameInstance" Type="GameModel.Store.GameInstanceSet" Multiplicity="0..1" />
@@ -54,6 +64,18 @@
       </Principal>
       <Dependent Role="Player">
         <PropertyRef Name="GameInstanceId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="MapGameInstance">
+    <End Role="Map" Type="GameModel.Store.MapSet" Multiplicity="0..1" />
+    <End Role="GameInstance" Type="GameModel.Store.GameInstanceSet" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Map">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="GameInstance">
+        <PropertyRef Name="Map_Id" />
       </Dependent>
     </ReferentialConstraint>
   </Association>
@@ -69,6 +91,10 @@
           <AssociationSet Name="GameInstancePlayer" Association="GameModel.GameInstancePlayer">
             <End Role="GameInstance" EntitySet="GameInstanceSet" />
             <End Role="Player" EntitySet="PlayerSet" />
+          </AssociationSet>
+          <AssociationSet Name="MapGameInstance" Association="GameModel.MapGameInstance">
+            <End Role="Map" EntitySet="MapSet" />
+            <End Role="GameInstance" EntitySet="GameInstanceSet" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="Player">
@@ -90,6 +116,7 @@
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <NavigationProperty Name="Players" Relationship="GameModel.GameInstancePlayer" FromRole="GameInstance" ToRole="Player" />
+          <NavigationProperty Name="Map" Relationship="GameModel.MapGameInstance" FromRole="GameInstance" ToRole="Map" />
         </EntityType>
         <EntityType Name="Team">
           <Key>
@@ -105,6 +132,10 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="LatLont" Type="GameModel.PositionType" Nullable="false" />
+          <Property Name="Size" Type="GameModel.PositionType" Nullable="false" />
+          <Property Name="Zoom" Type="Int32" Nullable="true" />
+          <NavigationProperty Name="GameInstance" Relationship="GameModel.MapGameInstance" FromRole="Map" ToRole="GameInstance" />
         </EntityType>
         <Association Name="GameInstancePlayer">
           <End Type="GameModel.GameInstance" Role="GameInstance" Multiplicity="0..1" />
@@ -117,6 +148,11 @@
               <PropertyRef Name="GameInstanceId" />
             </Dependent>
           </ReferentialConstraint>
+        </Association>
+        <Association Name="MapGameInstance">
+          <End Type="GameModel.Map" Role="Map" Multiplicity="0..1" />
+          <End Type="GameModel.GameInstance" Role="GameInstance" Multiplicity="0..1" >
+          </End>
         </Association>
       </Schema>
     </edmx:ConceptualModels>
@@ -157,9 +193,27 @@
       <EntityTypeMapping TypeName="IsTypeOf(GameModel.Map)">
         <MappingFragment StoreEntitySet="MapSet">
           <ScalarProperty Name="Id" ColumnName="Id" />
+          <ComplexProperty Name="LatLont" TypeName="GameModel.PositionType">
+            <ScalarProperty Name="x" ColumnName="LatLont_x" />
+            <ScalarProperty Name="y" ColumnName="LatLont_y" />
+          </ComplexProperty>
+          <ComplexProperty Name="Size" TypeName="GameModel.PositionType">
+            <ScalarProperty Name="x" ColumnName="Size_x" />
+            <ScalarProperty Name="y" ColumnName="Size_y" />
+          </ComplexProperty>
+          <ScalarProperty Name="Zoom" ColumnName="Zoom" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
+    <AssociationSetMapping Name="MapGameInstance" TypeName="GameModel.MapGameInstance" StoreEntitySet="GameInstanceSet">
+      <EndProperty Name="Map">
+        <ScalarProperty Name="Id" ColumnName="Map_Id" />
+      </EndProperty>
+      <EndProperty Name="GameInstance">
+        <ScalarProperty Name="Id" ColumnName="Id" />
+      </EndProperty>
+      <Condition ColumnName="Map_Id" IsNull="false" />
+    </AssociationSetMapping>
   </EntityContainerMapping>
 </Mapping></edmx:Mappings>
   </edmx:Runtime>

@@ -14,6 +14,18 @@ namespace Run_Conquer_Server.Models
     
     public partial class Map
     {
+        public Map()
+        {
+            this.LatLont = new PositionType();
+            this.Size = new PositionType();
+        }
+    
         public int Id { get; set; }
+        public Nullable<int> Zoom { get; set; }
+    
+        public PositionType LatLont { get; set; }
+        public PositionType Size { get; set; }
+    
+        public virtual GameInstance GameInstance { get; set; }
     }
 }

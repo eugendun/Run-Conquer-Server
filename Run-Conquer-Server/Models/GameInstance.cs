@@ -22,5 +22,6 @@ namespace Run_Conquer_Server.Models
         public int Id { get; set; }
     
         public virtual ICollection<Player> Players { get; set; }
+        public virtual Map Map { get; set; }
     }
 }
