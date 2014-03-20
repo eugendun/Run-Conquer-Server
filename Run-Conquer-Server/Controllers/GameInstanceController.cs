@@ -70,9 +70,9 @@ namespace Run_Conquer_Server.Controllers
 
             if (gameinstance.Map != null) {
                 if (game.Map == null) {
-                    game.Map = new Map { LatLont = gameinstance.Map.LatLont, Zoom = gameinstance.Map.Zoom, Size = gameinstance.Map.Size };
+                    game.Map = new Map { LatLon = gameinstance.Map.LatLon, Zoom = gameinstance.Map.Zoom, Size = gameinstance.Map.Size };
                 } else {
-                    game.Map.LatLont = gameinstance.Map.LatLont;
+                    game.Map.LatLon = gameinstance.Map.LatLon;
                     game.Map.Size = gameinstance.Map.Size;
                     game.Map.Zoom = gameinstance.Map.Zoom;
                 }

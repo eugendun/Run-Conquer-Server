@@ -2,7 +2,7 @@
 -- --------------------------------------------------
 -- Entity Designer DDL Script for SQL Server 2005, 2008, 2012 and Azure
 -- --------------------------------------------------
--- Date Created: 03/20/2014 01:30:12
+-- Date Created: 03/20/2014 22:53:59
 -- Generated from EDMX file: D:\Source\Repos\Run-Conquer-Server\Run-Conquer-Server\Models\GameModel.edmx
 -- --------------------------------------------------
 
@@ -21,7 +21,7 @@ IF OBJECT_ID(N'[dbo].[FK_GameInstancePlayer]', 'F') IS NOT NULL
     ALTER TABLE [dbo].[PlayerSet] DROP CONSTRAINT [FK_GameInstancePlayer];
 GO
 IF OBJECT_ID(N'[dbo].[FK_MapGameInstance]', 'F') IS NOT NULL
-    ALTER TABLE [dbo].[MapSet] DROP CONSTRAINT [FK_MapGameInstance];
+    ALTER TABLE [dbo].[GameInstanceSet] DROP CONSTRAINT [FK_MapGameInstance];
 GO
 
 -- --------------------------------------------------
@@ -73,8 +73,8 @@ GO
 -- Creating table 'MapSet'
 CREATE TABLE [dbo].[MapSet] (
     [Id] int IDENTITY(1,1) NOT NULL,
-    [LatLont_x] float  NOT NULL,
-    [LatLont_y] float  NOT NULL,
+    [LatLon_x] float  NOT NULL,
+    [LatLon_y] float  NOT NULL,
     [Size_x] float  NOT NULL,
     [Size_y] float  NOT NULL,
     [Zoom] int  NULL

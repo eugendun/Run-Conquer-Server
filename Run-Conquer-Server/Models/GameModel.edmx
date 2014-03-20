@@ -49,8 +49,8 @@
       <PropertyRef Name="Id" />
     </Key>
     <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-    <Property Name="LatLont_x" Type="float" Nullable="false" />
-    <Property Name="LatLont_y" Type="float" Nullable="false" />
+    <Property Name="LatLon_x" Type="float" Nullable="false" />
+    <Property Name="LatLon_y" Type="float" Nullable="false" />
     <Property Name="Size_x" Type="float" Nullable="false" />
     <Property Name="Size_y" Type="float" Nullable="false" />
     <Property Name="Zoom" Type="int" Nullable="true" />
@@ -132,7 +132,7 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="LatLont" Type="GameModel.PositionType" Nullable="false" />
+          <Property Name="LatLon" Type="GameModel.PositionType" Nullable="false" />
           <Property Name="Size" Type="GameModel.PositionType" Nullable="false" />
           <Property Name="Zoom" Type="Int32" Nullable="true" />
           <NavigationProperty Name="GameInstance" Relationship="GameModel.MapGameInstance" FromRole="Map" ToRole="GameInstance" />
@@ -193,9 +193,9 @@
       <EntityTypeMapping TypeName="IsTypeOf(GameModel.Map)">
         <MappingFragment StoreEntitySet="MapSet">
           <ScalarProperty Name="Id" ColumnName="Id" />
-          <ComplexProperty Name="LatLont" TypeName="GameModel.PositionType">
-            <ScalarProperty Name="x" ColumnName="LatLont_x" />
-            <ScalarProperty Name="y" ColumnName="LatLont_y" />
+          <ComplexProperty Name="LatLon" TypeName="GameModel.PositionType">
+            <ScalarProperty Name="x" ColumnName="LatLon_x" />
+            <ScalarProperty Name="y" ColumnName="LatLon_y" />
           </ComplexProperty>
           <ComplexProperty Name="Size" TypeName="GameModel.PositionType">
             <ScalarProperty Name="x" ColumnName="Size_x" />
