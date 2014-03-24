@@ -2,7 +2,7 @@
 -- --------------------------------------------------
 -- Entity Designer DDL Script for SQL Server 2005, 2008, 2012 and Azure
 -- --------------------------------------------------
--- Date Created: 03/20/2014 22:53:59
+-- Date Created: 03/24/2014 22:07:53
 -- Generated from EDMX file: D:\Source\Repos\Run-Conquer-Server\Run-Conquer-Server\Models\GameModel.edmx
 -- --------------------------------------------------
 
@@ -57,6 +57,8 @@ GO
 -- Creating table 'GameInstanceSet'
 CREATE TABLE [dbo].[GameInstanceSet] (
     [Id] int IDENTITY(1,1) NOT NULL,
+    [StartDate] datetime  NOT NULL,
+    [EndDate] datetime  NOT NULL,
     [Map_Id] int  NULL
 );
 GO

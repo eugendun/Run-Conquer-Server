@@ -33,6 +33,8 @@
       <PropertyRef Name="Id" />
     </Key>
     <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="StartDate" Type="datetime" Nullable="false" />
+    <Property Name="EndDate" Type="datetime" Nullable="false" />
     <Property Name="Map_Id" Type="int" Nullable="true" />
   </EntityType>
   <EntityType Name="TeamSet">
@@ -117,6 +119,8 @@
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <NavigationProperty Name="Players" Relationship="GameModel.GameInstancePlayer" FromRole="GameInstance" ToRole="Player" />
           <NavigationProperty Name="Map" Relationship="GameModel.MapGameInstance" FromRole="GameInstance" ToRole="Map" />
+          <Property Name="StartDate" Type="DateTime" Nullable="false" />
+          <Property Name="EndDate" Type="DateTime" Nullable="false" />
         </EntityType>
         <EntityType Name="Team">
           <Key>
@@ -176,6 +180,8 @@
       <EntityTypeMapping TypeName="IsTypeOf(GameModel.GameInstance)">
         <MappingFragment StoreEntitySet="GameInstanceSet">
           <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="StartDate" ColumnName="StartDate" />
+          <ScalarProperty Name="EndDate" ColumnName="EndDate" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
