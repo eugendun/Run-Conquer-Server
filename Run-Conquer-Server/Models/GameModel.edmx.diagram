@@ -11,6 +11,7 @@
         <EntityTypeShape EntityType="GameModel.Map" Width="1.5" PointX="4.25" PointY="3.625" />
         <AssociationConnector Association="GameModel.GameInstancePlayer" />
         <AssociationConnector Association="GameModel.MapGameInstance" />
+        <AssociationConnector Association="GameModel.PlayerTeam" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

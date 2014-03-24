@@ -2,7 +2,7 @@
 -- --------------------------------------------------
 -- Entity Designer DDL Script for SQL Server 2005, 2008, 2012 and Azure
 -- --------------------------------------------------
--- Date Created: 03/24/2014 22:07:53
+-- Date Created: 03/24/2014 23:10:11
 -- Generated from EDMX file: D:\Source\Repos\Run-Conquer-Server\Run-Conquer-Server\Models\GameModel.edmx
 -- --------------------------------------------------
 
@@ -50,15 +50,16 @@ CREATE TABLE [dbo].[PlayerSet] (
     [Id] int  NOT NULL,
     [Position_x] float  NOT NULL,
     [Position_y] float  NOT NULL,
-    [GameInstanceId] int  NULL
+    [GameInstanceId] int  NULL,
+    [Team_Id] int  NULL
 );
 GO
 
 -- Creating table 'GameInstanceSet'
 CREATE TABLE [dbo].[GameInstanceSet] (
     [Id] int IDENTITY(1,1) NOT NULL,
-    [StartDate] datetime  NOT NULL,
-    [EndDate] datetime  NOT NULL,
+    [StartDate] datetime  NULL,
+    [EndDate] datetime  NULL,
     [Map_Id] int  NULL
 );
 GO
@@ -67,8 +68,7 @@ GO
 CREATE TABLE [dbo].[TeamSet] (
     [Id] int IDENTITY(1,1) NOT NULL,
     [Color] nvarchar(max)  NOT NULL,
-    [Name] nvarchar(max)  NOT NULL,
-    [GameInstanceId] int  NOT NULL
+    [Name] nvarchar(max)  NOT NULL
 );
 GO
 
@@ -141,6 +141,20 @@ ADD CONSTRAINT [FK_MapGameInstance]
 CREATE INDEX [IX_FK_MapGameInstance]
 ON [dbo].[GameInstanceSet]
     ([Map_Id]);
+GO
+
+-- Creating foreign key on [Team_Id] in table 'PlayerSet'
+ALTER TABLE [dbo].[PlayerSet]
+ADD CONSTRAINT [FK_PlayerTeam]
+    FOREIGN KEY ([Team_Id])
+    REFERENCES [dbo].[TeamSet]
+        ([Id])
+    ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- Creating non-clustered index for FOREIGN KEY 'FK_PlayerTeam'
+CREATE INDEX [IX_FK_PlayerTeam]
+ON [dbo].[PlayerSet]
+    ([Team_Id]);
 GO
 
 -- --------------------------------------------------

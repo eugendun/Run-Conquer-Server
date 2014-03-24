@@ -25,5 +25,6 @@ namespace Run_Conquer_Server.Models
         public PositionType Position { get; set; }
     
         public virtual GameInstance GameInstance { get; set; }
+        public virtual Team Team { get; set; }
     }
 }

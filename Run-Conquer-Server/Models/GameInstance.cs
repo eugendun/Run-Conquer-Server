@@ -20,8 +20,8 @@ namespace Run_Conquer_Server.Models
         }
     
         public int Id { get; set; }
-        public System.DateTime StartDate { get; set; }
-        public System.DateTime EndDate { get; set; }
+        public Nullable<System.DateTime> StartDate { get; set; }
+        public Nullable<System.DateTime> EndDate { get; set; }
     
         public virtual ICollection<Player> Players { get; set; }
         public virtual Map Map { get; set; }

@@ -18,6 +18,10 @@
       <End Role="Map" EntitySet="MapSet" />
       <End Role="GameInstance" EntitySet="GameInstanceSet" />
     </AssociationSet>
+    <AssociationSet Name="PlayerTeam" Association="GameModel.Store.PlayerTeam">
+      <End Role="Player" EntitySet="PlayerSet" />
+      <End Role="Team" EntitySet="TeamSet" />
+    </AssociationSet>
   </EntityContainer>
   <EntityType Name="PlayerSet">
     <Key>
@@ -27,14 +31,15 @@
     <Property Name="Position_x" Type="float" Nullable="false" />
     <Property Name="Position_y" Type="float" Nullable="false" />
     <Property Name="GameInstanceId" Type="int" Nullable="true" />
+    <Property Name="Team_Id" Type="int" Nullable="true" />
   </EntityType>
   <EntityType Name="GameInstanceSet">
     <Key>
       <PropertyRef Name="Id" />
     </Key>
     <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-    <Property Name="StartDate" Type="datetime" Nullable="false" />
-    <Property Name="EndDate" Type="datetime" Nullable="false" />
+    <Property Name="StartDate" Type="datetime" Nullable="true" />
+    <Property Name="EndDate" Type="datetime" Nullable="true" />
     <Property Name="Map_Id" Type="int" Nullable="true" />
   </EntityType>
   <EntityType Name="TeamSet">
@@ -44,7 +49,6 @@
     <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
     <Property Name="Color" Type="nvarchar(max)" Nullable="false" />
     <Property Name="Name" Type="nvarchar(max)" Nullable="false" />
-    <Property Name="GameInstanceId" Type="int" Nullable="false" />
   </EntityType>
   <EntityType Name="MapSet">
     <Key>
@@ -81,6 +85,18 @@
       </Dependent>
     </ReferentialConstraint>
   </Association>
+  <Association Name="PlayerTeam">
+    <End Role="Player" Type="GameModel.Store.PlayerSet" Multiplicity="*" />
+    <End Role="Team" Type="GameModel.Store.TeamSet" Multiplicity="0..1" />
+    <ReferentialConstraint>
+      <Principal Role="Team">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="Player">
+        <PropertyRef Name="Team_Id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
 </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
@@ -98,6 +114,10 @@
             <End Role="Map" EntitySet="MapSet" />
             <End Role="GameInstance" EntitySet="GameInstanceSet" />
           </AssociationSet>
+          <AssociationSet Name="PlayerTeam" Association="GameModel.PlayerTeam">
+            <End Role="Player" EntitySet="PlayerSet" />
+            <End Role="Team" EntitySet="TeamSet" />
+          </AssociationSet>
           </EntityContainer>
         <EntityType Name="Player">
           <Key>
@@ -107,6 +127,7 @@
           <Property Name="Position" Type="GameModel.PositionType" Nullable="false" />
           <NavigationProperty Name="GameInstance" Relationship="GameModel.GameInstancePlayer" FromRole="Player" ToRole="GameInstance" />
           <Property Name="GameInstanceId" Type="Int32" Nullable="true" />
+          <NavigationProperty Name="Team" Relationship="GameModel.PlayerTeam" FromRole="Player" ToRole="Team" />
         </EntityType>
         <ComplexType Name="PositionType" >
           <Property Type="Double" Name="x" Nullable="false" />
@@ -119,8 +140,8 @@
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <NavigationProperty Name="Players" Relationship="GameModel.GameInstancePlayer" FromRole="GameInstance" ToRole="Player" />
           <NavigationProperty Name="Map" Relationship="GameModel.MapGameInstance" FromRole="GameInstance" ToRole="Map" />
-          <Property Name="StartDate" Type="DateTime" Nullable="false" />
-          <Property Name="EndDate" Type="DateTime" Nullable="false" />
+          <Property Name="StartDate" Type="DateTime" Nullable="true" annotation:StoreGeneratedPattern="None" />
+          <Property Name="EndDate" Type="DateTime" Nullable="true" />
         </EntityType>
         <EntityType Name="Team">
           <Key>
@@ -129,7 +150,7 @@
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Color" Type="String" Nullable="false" />
           <Property Name="Name" Type="String" Nullable="false" />
-          <Property Name="GameInstanceId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Player" Relationship="GameModel.PlayerTeam" FromRole="Team" ToRole="Player" />
         </EntityType>
         <EntityType Name="Map">
           <Key>
@@ -157,6 +178,10 @@
           <End Type="GameModel.Map" Role="Map" Multiplicity="0..1" />
           <End Type="GameModel.GameInstance" Role="GameInstance" Multiplicity="0..1" >
           </End>
+        </Association>
+        <Association Name="PlayerTeam">
+          <End Type="GameModel.Player" Role="Player" Multiplicity="*" />
+          <End Type="GameModel.Team" Role="Team" Multiplicity="0..1" />
         </Association>
       </Schema>
     </edmx:ConceptualModels>
@@ -191,7 +216,6 @@
           <ScalarProperty Name="Id" ColumnName="Id" />
           <ScalarProperty Name="Color" ColumnName="Color" />
           <ScalarProperty Name="Name" ColumnName="Name" />
-          <ScalarProperty Name="GameInstanceId" ColumnName="GameInstanceId" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
@@ -219,6 +243,15 @@
         <ScalarProperty Name="Id" ColumnName="Id" />
       </EndProperty>
       <Condition ColumnName="Map_Id" IsNull="false" />
+    </AssociationSetMapping>
+    <AssociationSetMapping Name="PlayerTeam" TypeName="GameModel.PlayerTeam" StoreEntitySet="PlayerSet">
+      <EndProperty Name="Team">
+        <ScalarProperty Name="Id" ColumnName="Team_Id" />
+      </EndProperty>
+      <EndProperty Name="Player">
+        <ScalarProperty Name="Id" ColumnName="Id" />
+      </EndProperty>
+      <Condition ColumnName="Team_Id" IsNull="false" />
     </AssociationSetMapping>
   </EntityContainerMapping>
 </Mapping></edmx:Mappings>
