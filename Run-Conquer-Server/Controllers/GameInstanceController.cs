@@ -78,6 +78,9 @@ namespace Run_Conquer_Server.Controllers
                 }
             }
 
+            game.StartDate = gameinstance.StartDate ?? gameinstance.StartDate;
+            game.EndDate = gameinstance.EndDate ?? gameinstance.EndDate;
+
             var players = gameinstance.Players;
             foreach (var player in players) {
                 var dbPlayer = _db.PlayerSet.Find(player.Id);
