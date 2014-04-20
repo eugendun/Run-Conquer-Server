@@ -29,7 +29,8 @@ namespace Run_Conquer_Server.Controllers
         public GameInstance GetGameInstance(int id)
         {
             GameInstance gameinstance = _db.GameInstanceSet.Find(id);
-            if (gameinstance == null) {
+            if (gameinstance == null)
+            {
                 throw new HttpResponseException(Request.CreateResponse(HttpStatusCode.NotFound));
             }
 
@@ -40,11 +41,12 @@ namespace Run_Conquer_Server.Controllers
         [HttpGet]
         public GameInstance GetLastGameInstance()
         {
-            var lastGameInstanceId =  (from game in _db.GameInstanceSet
-                                       select game.Id).Max();
+            var lastGameInstanceId = (from game in _db.GameInstanceSet
+                                      select game.Id).Max();
 
             GameInstance gameInstance = _db.GameInstanceSet.Find(lastGameInstanceId);
-            if (gameInstance == null) {
+            if (gameInstance == null)
+            {
                 throw new HttpResponseException(Request.CreateResponse(HttpStatusCode.NotFound));
             }
             return gameInstance;
@@ -54,24 +56,31 @@ namespace Run_Conquer_Server.Controllers
         [HttpPost]
         public HttpResponseMessage PutGameInstance(int id, GameInstance gameinstance)
         {
-            if (!ModelState.IsValid) {
+            if (!ModelState.IsValid)
+            {
                 return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);
             }
 
-            if (id != gameinstance.Id) {
+            if (id != gameinstance.Id)
+            {
                 return Request.CreateResponse(HttpStatusCode.BadRequest);
             }
 
             var game = _db.GameInstanceSet.Find(id);
 
-            if (game == null) {
+            if (game == null)
+            {
                 return Request.CreateErrorResponse(HttpStatusCode.NotFound, new HttpError("GameInstance not found!"));
             }
 
-            if (gameinstance.Map != null) {
-                if (game.Map == null) {
+            if (gameinstance.Map != null)
+            {
+                if (game.Map == null)
+                {
                     game.Map = new Map { LatLon = gameinstance.Map.LatLon, Zoom = gameinstance.Map.Zoom, Size = gameinstance.Map.Size };
-                } else {
+                }
+                else
+                {
                     game.Map.LatLon = gameinstance.Map.LatLon;
                     game.Map.Size = gameinstance.Map.Size;
                     game.Map.Zoom = gameinstance.Map.Zoom;
@@ -82,15 +91,34 @@ namespace Run_Conquer_Server.Controllers
             game.EndDate = gameinstance.EndDate ?? gameinstance.EndDate;
 
             var players = gameinstance.Players;
-            foreach (var player in players) {
+            foreach (var player in players)
+            {
                 var dbPlayer = _db.PlayerSet.Find(player.Id);
-                if (dbPlayer == null) {
-                    game.Players.Add(new Player { Id = player.Id, Position = player.Position });
-                } else {
-                    if (dbPlayer.GameInstance != game) {
+                if (dbPlayer == null)
+                {
+                    var newPlayer = new Player { Id = player.Id, Position = player.Position };
+                    if (player.Team != null)
+                    {
+                        newPlayer.Team = new Team { Color = player.Team.Color, Name = player.Team.Name };
+                    }
+                    game.Players.Add(newPlayer);
+                }
+                else
+                {
+                    if (dbPlayer.GameInstance != game)
+                    {
                         dbPlayer.GameInstance = game;
                     }
                     dbPlayer.Position = player.Position;
+                    if (dbPlayer.Team == null && player.Team != null)
+                    {
+                        dbPlayer.Team = new Team { Color = player.Team.Color, Name = player.Team.Name };
+                    }
+                    else if (player.Team != null)
+                    {
+                        dbPlayer.Team.Color = player.Team.Color;
+                        dbPlayer.Team.Name = player.Team.Name;
+                    }
                 }
             }
 
@@ -99,9 +127,12 @@ namespace Run_Conquer_Server.Controllers
             // TODO Add new players
             // TODO Update all players position
 
-            try {
+            try
+            {
                 _db.SaveChanges();
-            } catch (DbUpdateConcurrencyException ex) {
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
                 return Request.CreateErrorResponse(HttpStatusCode.NotFound, ex);
             }
 
@@ -114,7 +145,8 @@ namespace Run_Conquer_Server.Controllers
         [HttpPost]
         public HttpResponseMessage PostGameInstance(GameInstance gameinstance)
         {
-            if (ModelState.IsValid) {
+            if (ModelState.IsValid)
+            {
                 _db.GameInstanceSet.Add(gameinstance);
                 _db.SaveChanges();
 
